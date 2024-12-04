@@ -68,9 +68,9 @@
                 button1.disabled = !!choices.amico1;
                 button2.disabled = !!choices.amico2;
 
-                // Mostra il risultato se una delle scelte è fatta
+                // Mostra il risultato solo se uno dei due ha già fatto una scelta
                 if (choices.amico1 && choices.amico2) {
-                    output.textContent = `Amico 1: ${choices.amico1}, Amico 2: ${choices.amico2}`;
+                    output.textContent = ''; // Se entrambi hanno già scelto, non mostrare il risultato
                 }
             } else {
                 output.textContent = '';  // Non ci sono scelte iniziali, quindi nulla da visualizzare
