@@ -68,7 +68,7 @@
                 button1.disabled = !!choices.amico1;
                 button2.disabled = !!choices.amico2;
 
-                // Mostra i risultati
+                // Mostra i risultati se non già mostrati
                 output.textContent = '';
                 if (choices.amico1) output.textContent += `Sei il babbo natale segreto di: ${choices.amico1}`;
                 if (choices.amico2) output.textContent += (output.textContent ? ', ' : '') + `Sei il babbo natale segreto di: ${choices.amico2}`;
@@ -77,24 +77,20 @@
 
         // Funzione per gestire il clic sui pulsanti
         const handleClick = (buttonId) => {
-            console.log(`Gestione clic per: ${buttonId}`);
             if (!choices) choices = {}; // Se lo stato non esiste, inizializzalo
 
+            // Impediamo che il risultato venga mostrato più di una volta
             if (buttonId === 'amico1' && !choices.amico1) {
-                console.log("Amico 1 sta scegliendo...");
                 choices.amico1 = choices.amico2
                     ? options.find(opt => opt !== choices.amico2)
                     : options[Math.floor(Math.random() * options.length)];
-                console.log("Scelta per Amico 1:", choices.amico1);
                 db.ref('choices').set(choices); // Salva nel database
             }
 
             if (buttonId === 'amico2' && !choices.amico2) {
-                console.log("Amico 2 sta scegliendo...");
                 choices.amico2 = choices.amico1
                     ? options.find(opt => opt !== choices.amico1)
                     : options[Math.floor(Math.random() * options.length)];
-                console.log("Scelta per Amico 2:", choices.amico2);
                 db.ref('choices').set(choices); // Salva nel database
             }
         };
@@ -117,12 +113,10 @@
                 });
         });
 
-        // Debugging per verificare la connessione
-        console.log("Firebase inizializzato:", firebase.apps.length > 0);
-        db.ref('choices').once('value').then((snapshot) => {
-            console.log("Connessione al database riuscita:", snapshot.val());
-        }).catch((error) => {
-            console.error("Errore nel collegamento al database:", error);
+        // Funzione che rimuove la scritta quando la pagina viene ricaricata
+        window.addEventListener('beforeunload', () => {
+            // Resetta la scritta prima che la pagina venga ricaricata
+            output.textContent = '';
         });
     </script>
 </body>
