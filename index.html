@@ -87,7 +87,7 @@
                     ? options.find(opt => opt !== choices.amico2)
                     : options[Math.floor(Math.random() * options.length)];
                 db.ref('choices').set(choices); // Salva nel database
-                output.textContent = `Amico 1: ${choices.amico1}`;  // Mostra il risultato
+                output.textContent = `Sei il babbo natale segreto di: ${choices.amico1}`;  // Mostra il risultato
             }
 
             if (buttonId === 'amico2' && !choices.amico2) {
@@ -96,7 +96,7 @@
                     ? options.find(opt => opt !== choices.amico1)
                     : options[Math.floor(Math.random() * options.length)];
                 db.ref('choices').set(choices); // Salva nel database
-                output.textContent = `Amico 2: ${choices.amico2}`;  // Mostra il risultato
+                output.textContent = `Sei il babbo natale segreto di: ${choices.amico2}`;  // Mostra il risultato
             }
         };
 
