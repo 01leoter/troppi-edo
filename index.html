@@ -32,7 +32,6 @@
     <!-- Firebase Scripts -->
     <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-database.js"></script>
-    console.log("Firebase inizializzato:", app.name);
 
 
     <script>
@@ -50,6 +49,7 @@
         // Inizializza Firebase
         const app = firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+        console.log("Firebase inizializzato:", app.name);
 
         // Elementi HTML
         const button1 = document.getElementById('button1');
