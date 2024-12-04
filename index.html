@@ -27,7 +27,7 @@
     <h1>Troppi Edo</h1>
     <button id="button1">Clicca qui</button>
     <button id="button2">Oppure qui</button>
-    <button id="resetButton">Reset</button> <!-- Nuovo bottone per il reset -->
+    <button id="resetButton">Reset</button>
     <div id="output"></div>
 
     <!-- Firebase Scripts -->
@@ -53,7 +53,7 @@
         // Elementi HTML
         const button1 = document.getElementById('button1');
         const button2 = document.getElementById('button2');
-        const resetButton = document.getElementById('resetButton');  // Nuovo bottone
+        const resetButton = document.getElementById('resetButton');
         const output = document.getElementById('output');
 
         // Opzioni possibili
@@ -68,15 +68,12 @@
                 button1.disabled = !!choices.amico1;
                 button2.disabled = !!choices.amico2;
 
-                // Mostra i risultati solo se le scelte sono state fatte
+                // Mostra il risultato se una delle scelte è fatta
                 if (choices.amico1 && choices.amico2) {
-                    output.textContent = `Sei il babbo natale segreto di: ${choices.amico1} e ${choices.amico2}`;
-                } else {
-                    output.textContent = ''; // Non mostrare nulla finché non sono state fatte entrambe le scelte
+                    output.textContent = `Amico 1: ${choices.amico1}, Amico 2: ${choices.amico2}`;
                 }
             } else {
-                // Se non ci sono scelte precedenti, rimuovi qualsiasi risultato
-                output.textContent = '';
+                output.textContent = '';  // Non ci sono scelte iniziali, quindi nulla da visualizzare
             }
         });
 
@@ -86,18 +83,20 @@
 
             if (buttonId === 'amico1' && !choices.amico1) {
                 // Se Amico 1 clicca per primo
-                choices.amico1 = choices.amico2 
-                    ? options.find(opt => opt !== choices.amico2) 
+                choices.amico1 = choices.amico2
+                    ? options.find(opt => opt !== choices.amico2)
                     : options[Math.floor(Math.random() * options.length)];
                 db.ref('choices').set(choices); // Salva nel database
+                output.textContent = `Amico 1: ${choices.amico1}`;  // Mostra il risultato
             }
 
             if (buttonId === 'amico2' && !choices.amico2) {
                 // Se Amico 2 clicca per primo
-                choices.amico2 = choices.amico1 
-                    ? options.find(opt => opt !== choices.amico1) 
+                choices.amico2 = choices.amico1
+                    ? options.find(opt => opt !== choices.amico1)
                     : options[Math.floor(Math.random() * options.length)];
                 db.ref('choices').set(choices); // Salva nel database
+                output.textContent = `Amico 2: ${choices.amico2}`;  // Mostra il risultato
             }
         };
 
@@ -118,7 +117,6 @@
                     console.error("Errore durante il reset:", error);
                 });
         });
-
     </script>
 </body>
 </html>
