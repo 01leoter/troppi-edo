@@ -87,7 +87,7 @@
                     ? options.find(opt => opt !== choices.amico2)
                     : options[Math.floor(Math.random() * options.length)];
                 db.ref('choices').set(choices); // Salva nel database
-                output.textContent = `Sei il babbo natale segreto di: ${choices.amico1}`;  // Mostra il risultato
+                output.textContent = `Amico 1: ${choices.amico1}`;  // Mostra il risultato
             }
 
             if (buttonId === 'amico2' && !choices.amico2) {
@@ -96,7 +96,7 @@
                     ? options.find(opt => opt !== choices.amico1)
                     : options[Math.floor(Math.random() * options.length)];
                 db.ref('choices').set(choices); // Salva nel database
-                output.textContent = `Sei il babbo natale segreto di: ${choices.amico2}`;  // Mostra il risultato
+                output.textContent = `Amico 2: ${choices.amico2}`;  // Mostra il risultato
             }
         };
 
@@ -106,16 +106,22 @@
 
         // Funzione per resettare il database
         resetButton.addEventListener('click', () => {
-            db.ref('choices').remove()
-                .then(() => {
-                    console.log("Database resettato con successo.");
-                    output.textContent = "Database resettato. Ricarica la pagina!";
-                    button1.disabled = false;
-                    button2.disabled = false;
-                })
-                .catch((error) => {
-                    console.error("Errore durante il reset:", error);
-                });
+            const code = prompt("Inserisci il codice per resettare il database:");
+
+            if (code === "0000") {
+                db.ref('choices').remove()
+                    .then(() => {
+                        console.log("Database resettato con successo.");
+                        output.textContent = "Database resettato. Ricarica la pagina!";
+                        button1.disabled = false;
+                        button2.disabled = false;
+                    })
+                    .catch((error) => {
+                        console.error("Errore durante il reset:", error);
+                    });
+            } else {
+                alert("Codice errato. Il database non è stato resettato.");
+            }
         });
     </script>
 </body>
