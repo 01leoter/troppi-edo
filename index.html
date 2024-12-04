@@ -59,6 +59,7 @@
         // Opzioni possibili
         const options = ["Edo", "Piglia"];
         let choices = null; // Stato iniziale
+        let hasClicked = false; // Variabile per verificare se un pulsante è stato cliccato
 
         // Recupera lo stato iniziale dal database
         db.ref('choices').on('value', (snapshot) => {
@@ -67,11 +68,6 @@
                 // Disabilita i pulsanti in base alle scelte già effettuate
                 button1.disabled = !!choices.amico1;
                 button2.disabled = !!choices.amico2;
-
-                // Mostra i risultati solo se non sono già mostrati
-                output.textContent = '';  // Prima di mostrare un nuovo risultato, cancella il vecchio
-                if (choices.amico1) output.textContent += `Sei il babbo natale segreto di: ${choices.amico1}`;
-                if (choices.amico2) output.textContent += (output.textContent ? ', ' : '') + `Sei il babbo natale segreto di: ${choices.amico2}`;
             } else {
                 // Se non ci sono scelte precedenti, rimuovi qualsiasi risultato
                 output.textContent = '';
@@ -82,19 +78,23 @@
         const handleClick = (buttonId) => {
             if (!choices) choices = {}; // Se lo stato non esiste, inizializzalo
 
-            // Impediamo che il risultato venga mostrato più di una volta
-            if (buttonId === 'amico1' && !choices.amico1) {
-                choices.amico1 = choices.amico2
-                    ? options.find(opt => opt !== choices.amico2)
-                    : options[Math.floor(Math.random() * options.length)];
-                db.ref('choices').set(choices); // Salva nel database
-            }
+            if (!hasClicked) {
+                // Se nessuno ha ancora cliccato, cambia il valore
+                if (buttonId === 'amico1' && !choices.amico1) {
+                    choices.amico1 = choices.amico2
+                        ? options.find(opt => opt !== choices.amico2)
+                        : options[Math.floor(Math.random() * options.length)];
+                    db.ref('choices').set(choices); // Salva nel database
+                    hasClicked = true;  // Imposta che un pulsante è stato premuto
+                }
 
-            if (buttonId === 'amico2' && !choices.amico2) {
-                choices.amico2 = choices.amico1
-                    ? options.find(opt => opt !== choices.amico1)
-                    : options[Math.floor(Math.random() * options.length)];
-                db.ref('choices').set(choices); // Salva nel database
+                if (buttonId === 'amico2' && !choices.amico2) {
+                    choices.amico2 = choices.amico1
+                        ? options.find(opt => opt !== choices.amico1)
+                        : options[Math.floor(Math.random() * options.length)];
+                    db.ref('choices').set(choices); // Salva nel database
+                    hasClicked = true;  // Imposta che un pulsante è stato premuto
+                }
             }
         };
 
@@ -110,6 +110,7 @@
                     output.textContent = "Database resettato. Ricarica la pagina!";
                     button1.disabled = false;
                     button2.disabled = false;
+                    hasClicked = false;  // Resetta la variabile che tiene traccia dei clic
                 })
                 .catch((error) => {
                     console.error("Errore durante il reset:", error);
@@ -121,6 +122,7 @@
             // Resetta la scritta prima che la pagina venga ricaricata
             output.textContent = '';
         });
+
     </script>
 </body>
 </html>
