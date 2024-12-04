@@ -68,10 +68,13 @@
                 button1.disabled = !!choices.amico1;
                 button2.disabled = !!choices.amico2;
 
-                // Mostra i risultati se non già mostrati
-                output.textContent = '';
+                // Mostra i risultati solo se non sono già mostrati
+                output.textContent = '';  // Prima di mostrare un nuovo risultato, cancella il vecchio
                 if (choices.amico1) output.textContent += `Sei il babbo natale segreto di: ${choices.amico1}`;
                 if (choices.amico2) output.textContent += (output.textContent ? ', ' : '') + `Sei il babbo natale segreto di: ${choices.amico2}`;
+            } else {
+                // Se non ci sono scelte precedenti, rimuovi qualsiasi risultato
+                output.textContent = '';
             }
         });
 
