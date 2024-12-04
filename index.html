@@ -30,9 +30,8 @@
     <div id="output"></div>
 
     <!-- Firebase Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-database.js"></script>
-
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-database-compat.js"></script>
 
     <script>
         // Configurazione Firebase (sostituisci con i tuoi dettagli)
@@ -41,15 +40,14 @@
             authDomain: "babbo-natale-segreto-11d3f.firebaseapp.com",
             databaseURL: "https://babbo-natale-segreto-11d3f-default-rtdb.europe-west1.firebasedatabase.app",
             projectId: "babbo-natale-segreto-11d3f",
-            storageBucket: "babbo-natale-segreto-11d3f.firebasestorage.app",
+            storageBucket: "babbo-natale-segreto-11d3f.appspot.com",
             messagingSenderId: "332251572186",
             appId: "1:332251572186:web:016634b9244357cae042e3"
         };
 
         // Inizializza Firebase
-        const app = firebase.initializeApp(firebaseConfig);
+        firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        console.log("Firebase inizializzato:", app.name);
 
         // Elementi HTML
         const button1 = document.getElementById('button1');
@@ -61,7 +59,7 @@
         let choices = null; // Stato iniziale
 
         // Recupera lo stato iniziale dal database
-        firebase.database().ref('choices').on('value', (snapshot) => {
+        db.ref('choices').on('value', (snapshot) => {
             choices = snapshot.val();
             if (choices) {
                 // Disabilita i pulsanti in base alle scelte già effettuate
@@ -70,35 +68,46 @@
 
                 // Mostra i risultati
                 output.textContent = '';
-                if (choices.amico1) output.textContent += `Sei il babbo natale segreto di:  ${choices.amico1}`;
+                if (choices.amico1) output.textContent += `Sei il babbo natale segreto di: ${choices.amico1}`;
                 if (choices.amico2) output.textContent += (output.textContent ? ', ' : '') + `Sei il babbo natale segreto di: ${choices.amico2}`;
             }
         });
 
         // Funzione per gestire il clic sui pulsanti
         const handleClick = (buttonId) => {
+            console.log(`Gestione clic per: ${buttonId}`);
             if (!choices) choices = {}; // Se lo stato non esiste, inizializzalo
 
             if (buttonId === 'amico1' && !choices.amico1) {
-                // Se Amico 1 clicca per primo
-                choices.amico1 = choices.amico2 
-                    ? options.find(opt => opt !== choices.amico2) 
+                console.log("Amico 1 sta scegliendo...");
+                choices.amico1 = choices.amico2
+                    ? options.find(opt => opt !== choices.amico2)
                     : options[Math.floor(Math.random() * options.length)];
-                firebase.database().ref('choices').set(choices); // Salva nel database
+                console.log("Scelta per Amico 1:", choices.amico1);
+                db.ref('choices').set(choices); // Salva nel database
             }
 
             if (buttonId === 'amico2' && !choices.amico2) {
-                // Se Amico 2 clicca per primo
-                choices.amico2 = choices.amico1 
-                    ? options.find(opt => opt !== choices.amico1) 
+                console.log("Amico 2 sta scegliendo...");
+                choices.amico2 = choices.amico1
+                    ? options.find(opt => opt !== choices.amico1)
                     : options[Math.floor(Math.random() * options.length)];
-                firebase.database().ref('choices').set(choices); // Salva nel database
+                console.log("Scelta per Amico 2:", choices.amico2);
+                db.ref('choices').set(choices); // Salva nel database
             }
         };
 
         // Assegna i listener ai pulsanti
         button1.addEventListener('click', () => handleClick('amico1'));
         button2.addEventListener('click', () => handleClick('amico2'));
+
+        // Debugging per verificare la connessione
+        console.log("Firebase inizializzato:", firebase.apps.length > 0);
+        db.ref('choices').once('value').then((snapshot) => {
+            console.log("Connessione al database riuscita:", snapshot.val());
+        }).catch((error) => {
+            console.error("Errore nel collegamento al database:", error);
+        });
     </script>
 </body>
 </html>
