@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Troppi Edo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        button {
+            font-size: 16px;
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+        }
+        #output {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Troppi Edo</h1>
+    <button id="button1">Clicca qui</button>
+    <button id="button2">Oppure qui</button>
+    <div id="output"></div>
+
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-database.js"></script>
+
+    <script>
+        // Configurazione Firebase (sostituisci con i tuoi dettagli)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZsbuBRwwQxvSc1XF06JANH804qGAekE0",
+            authDomain: "babbo-natale-segreto-11d3f.firebaseapp.com",
+            databaseURL: "https://babbo-natale-segreto-11d3f-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "babbo-natale-segreto-11d3f",
+            storageBucket: "babbo-natale-segreto-11d3f.firebasestorage.app",
+            messagingSenderId: "332251572186",
+            appId: "1:332251572186:web:016634b9244357cae042e3"
+        };
+
+        // Inizializza Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Elementi HTML
+        const button1 = document.getElementById('button1');
+        const button2 = document.getElementById('button2');
+        const output = document.getElementById('output');
+
+        // Opzioni possibili
+        const options = ["Edo", "Piglia"];
+        let choices = null; // Stato iniziale
+
+        // Recupera lo stato iniziale dal database
+        firebase.database().ref('choices').on('value', (snapshot) => {
+            choices = snapshot.val();
+            if (choices) {
+                // Disabilita i pulsanti in base alle scelte già effettuate
+                button1.disabled = !!choices.amico1;
+                button2.disabled = !!choices.amico2;
+
+                // Mostra i risultati
+                output.textContent = '';
+                if (choices.amico1) output.textContent += `Sei il babbo natale segreto di:  ${choices.amico1}`;
+                if (choices.amico2) output.textContent += (output.textContent ? ', ' : '') + `Sei il babbo natale segreto di: ${choices.amico2}`;
+            }
+        });
+
+        // Funzione per gestire il clic sui pulsanti
+        const handleClick = (buttonId) => {
+            if (!choices) choices = {}; // Se lo stato non esiste, inizializzalo
+
+            if (buttonId === 'amico1' && !choices.amico1) {
+                // Se Amico 1 clicca per primo
+                choices.amico1 = choices.amico2 
+                    ? options.find(opt => opt !== choices.amico2) 
+                    : options[Math.floor(Math.random() * options.length)];
+                firebase.database().ref('choices').set(choices); // Salva nel database
+            }
+
+            if (buttonId === 'amico2' && !choices.amico2) {
+                // Se Amico 2 clicca per primo
+                choices.amico2 = choices.amico1 
+                    ? options.find(opt => opt !== choices.amico1) 
+                    : options[Math.floor(Math.random() * options.length)];
+                firebase.database().ref('choices').set(choices); // Salva nel database
+            }
+        };
+
+        // Assegna i listener ai pulsanti
+        button1.addEventListener('click', () => handleClick('amico1'));
+        button2.addEventListener('click', () => handleClick('amico2'));
+    </script>
+</body>
+</html>
