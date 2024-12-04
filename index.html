@@ -27,6 +27,7 @@
     <h1>Troppi Edo</h1>
     <button id="button1">Clicca qui</button>
     <button id="button2">Oppure qui</button>
+    <button id="resetButton">Reset</button> <!-- Nuovo bottone per il reset -->
     <div id="output"></div>
 
     <!-- Firebase Scripts -->
@@ -52,6 +53,7 @@
         // Elementi HTML
         const button1 = document.getElementById('button1');
         const button2 = document.getElementById('button2');
+        const resetButton = document.getElementById('resetButton');  // Nuovo bottone
         const output = document.getElementById('output');
 
         // Opzioni possibili
@@ -100,6 +102,20 @@
         // Assegna i listener ai pulsanti
         button1.addEventListener('click', () => handleClick('amico1'));
         button2.addEventListener('click', () => handleClick('amico2'));
+
+        // Funzione per resettare il database
+        resetButton.addEventListener('click', () => {
+            db.ref('choices').remove()
+                .then(() => {
+                    console.log("Database resettato con successo.");
+                    output.textContent = "Database resettato. Ricarica la pagina!";
+                    button1.disabled = false;
+                    button2.disabled = false;
+                })
+                .catch((error) => {
+                    console.error("Errore durante il reset:", error);
+                });
+        });
 
         // Debugging per verificare la connessione
         console.log("Firebase inizializzato:", firebase.apps.length > 0);
