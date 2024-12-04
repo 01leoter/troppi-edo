@@ -27,7 +27,7 @@
     <h1>Troppi Edo</h1>
     <button id="button1">Clicca qui</button>
     <button id="button2">Oppure qui</button>
-    <button id="resetButton">Reset</button> <!-- Nuovo bottone per il reset -->
+    <button id="resetButton">Reset</button>
     <div id="output"></div>
 
     <!-- Firebase Scripts -->
@@ -53,13 +53,12 @@
         // Elementi HTML
         const button1 = document.getElementById('button1');
         const button2 = document.getElementById('button2');
-        const resetButton = document.getElementById('resetButton');  // Nuovo bottone
+        const resetButton = document.getElementById('resetButton');
         const output = document.getElementById('output');
 
         // Opzioni possibili
         const options = ["Edo", "Piglia"];
         let choices = null; // Stato iniziale
-        let hasClicked = false; // Variabile per verificare se un pulsante è stato cliccato
 
         // Recupera lo stato iniziale dal database
         db.ref('choices').on('value', (snapshot) => {
@@ -68,9 +67,13 @@
                 // Disabilita i pulsanti in base alle scelte già effettuate
                 button1.disabled = !!choices.amico1;
                 button2.disabled = !!choices.amico2;
+
+                // Mostra i risultati se entrambe le scelte sono fatte
+                if (choices.amico1 && choices.amico2) {
+                    output.textContent = `Amico 1: ${choices.amico1}, Amico 2: ${choices.amico2}`;
+                }
             } else {
-                // Se non ci sono scelte precedenti, rimuovi qualsiasi risultato
-                output.textContent = '';
+                output.textContent = '';  // Se non ci sono scelte, la scritta è vuota
             }
         });
 
@@ -78,23 +81,20 @@
         const handleClick = (buttonId) => {
             if (!choices) choices = {}; // Se lo stato non esiste, inizializzalo
 
-            if (!hasClicked) {
-                // Se nessuno ha ancora cliccato, cambia il valore
-                if (buttonId === 'amico1' && !choices.amico1) {
-                    choices.amico1 = choices.amico2
-                        ? options.find(opt => opt !== choices.amico2)
-                        : options[Math.floor(Math.random() * options.length)];
-                    db.ref('choices').set(choices); // Salva nel database
-                    hasClicked = true;  // Imposta che un pulsante è stato premuto
-                }
+            if (buttonId === 'amico1' && !choices.amico1) {
+                // Se Amico 1 clicca per primo
+                choices.amico1 = choices.amico2
+                    ? options.find(opt => opt !== choices.amico2)
+                    : options[Math.floor(Math.random() * options.length)];
+                db.ref('choices').set(choices); // Salva nel database
+            }
 
-                if (buttonId === 'amico2' && !choices.amico2) {
-                    choices.amico2 = choices.amico1
-                        ? options.find(opt => opt !== choices.amico1)
-                        : options[Math.floor(Math.random() * options.length)];
-                    db.ref('choices').set(choices); // Salva nel database
-                    hasClicked = true;  // Imposta che un pulsante è stato premuto
-                }
+            if (buttonId === 'amico2' && !choices.amico2) {
+                // Se Amico 2 clicca per primo
+                choices.amico2 = choices.amico1
+                    ? options.find(opt => opt !== choices.amico1)
+                    : options[Math.floor(Math.random() * options.length)];
+                db.ref('choices').set(choices); // Salva nel database
             }
         };
 
@@ -110,19 +110,11 @@
                     output.textContent = "Database resettato. Ricarica la pagina!";
                     button1.disabled = false;
                     button2.disabled = false;
-                    hasClicked = false;  // Resetta la variabile che tiene traccia dei clic
                 })
                 .catch((error) => {
                     console.error("Errore durante il reset:", error);
                 });
         });
-
-        // Funzione che rimuove la scritta quando la pagina viene ricaricata
-        window.addEventListener('beforeunload', () => {
-            // Resetta la scritta prima che la pagina venga ricaricata
-            output.textContent = '';
-        });
-
     </script>
 </body>
 </html>
